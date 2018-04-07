@@ -4,35 +4,50 @@ class Enemy {
     // we've provided one for you to get started
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    constructor(x, y) {
+    constructor(x, y, speed) {
         this.sprite = 'images/enemy-bug.png';
         this.x = x;
         this.y = y;
+        this.speed = speed;
+        this.width = 99;
+        this.height = 77;
     }
 
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    update(dt) {}
+    update(dt) {
+        this.x = this.x + this.speed * dt;
+    }
 
     // Draw the enemy on the screen, required method for game
     render(dt) {
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        if (this.x > 505) {
+            this.x = -50;
+            ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        } else {
+            ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        }
     }
 }
 
 class Player {
 
-    constructor() {
+    constructor(width, height) {
         this.sprite = 'images/char-horn-girl.png';
-        this.x = 204;
-        this.y = 320;
+        this.x = 208;
+        this.y = 380;
+        this.width = width;
+        this.height = height;
     }
 
     render() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        if (this.y < 70) {
+            console.log("point")
+        }
     }
-    
+
     update() {}
 
     handleInput(key) {
@@ -57,9 +72,9 @@ class Player {
 
 // Now instantiate your objects.
 
-let enemy1 = new Enemy(0, 60);
-let enemy2 = new Enemy(0, 145);
-let enemy3 = new Enemy(0, 230);
+let enemy1 = new Enemy(-50, 140, 80);
+let enemy2 = new Enemy(-50, 223, 80);
+let enemy3 = new Enemy(-50, 306, 80);
 
 // Place all enemy objects in an array called allEnemies
 
@@ -67,8 +82,7 @@ let allEnemies = [enemy1, enemy2, enemy3];
 
 // Place the player object in a variable called player
 
-let player = new Player()
-
+let player = new Player(77,90)
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
