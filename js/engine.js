@@ -79,15 +79,66 @@ var Engine = (function (global) {
              */
             function update(dt) {
                 updateEntities(dt);
-                checkCollisions();
+                cornersCoordinates = calculateCornersCoordinates();
+                checkCollisions(cornersCoordinates);
             }
 
-            function checkCollisions() {
-                allEnemies.forEach(function (enemy) {
-                    if (enemy.x < player.x + 30 && enemy1.x + 60 > player.x && enemy.y < player.y + 60 && enemy.y + 40 > player.y) {
-                        player.y = 380;
-                    };
-                });
+            function calculateCornersCoordinates() {
+                let coordinates = {
+                    player_left_x: player.x,
+                    player_right_x: player.x + player.width,
+                    player_upper_y: player.y,
+                    player_bottom_y: player.y + player.height,
+
+                    enemy1_left_x: enemy1.x,
+                    enemy1_right_x: enemy1.x + enemy1.width,
+                    enemy1_upper_y: enemy1.y,
+                    enemy1_bottom_y: enemy1.y + enemy1.height,
+
+                    enemy2_left_x: enemy2.x,
+                    enemy2_right_x: enemy2.x + enemy2.width,
+                    enemy2_upper_y: enemy2.y,
+                    enemy2_bottom_y: enemy2.y + enemy2.height,
+
+                    enemy3_left_x: enemy3.x,
+                    enemy3_right_x: enemy3.x + enemy3.width,
+                    enemy3_upper_y: enemy3.y,
+                    enemy3_bottom_y: enemy3.y + enemy3.height,
+                }
+                return coordinates;
+            }
+
+            function checkCollisions(coordinates) {
+
+                if ((coordinates.player_left_x > coordinates.enemy1_left_x && coordinates.player_left_x < coordinates.enemy1_right_x && coordinates.player_upper_y > coordinates.enemy1_upper_y && coordinates.player_upper_y < coordinates.enemy1_upper_y) 
+                    || (coordinates.player_right_x < coordinates.enemy1_right_x && coordinates.player_right_x > coordinates.enemy1_left_x && coordinates.player_upper_y > coordinates.enemy1_upper_y && coordinates.layer_upper_y < coordinates.enemy1_upper_y)
+                    || (coordinates.player_left_x > coordinates.enemy1_left_x && coordinates.player_left_x < coordinates.enemy1_right_x && coordinates.player_bottom_y > coordinates.enemy1_upper_y && coordinates.player_bottom_y < coordinates.enemy1_bottom_y)
+                    || (coordinates.player_right_x < coordinates.enemy1_right_x && coordinates.player_right_x > coordinates.enemy1_left_x && coordinates.player_bottom_y > coordinates.enemy1_upper_y && coordinates.player_bottom_y < coordinates.enemy1_bottom_y)) {
+                        player.y = 380;  
+                    }
+
+                if ((coordinates.player_left_x > coordinates.enemy2_left_x && coordinates.player_left_x < coordinates.enemy2_right_x && coordinates.player_upper_y > coordinates.enemy2_upper_y && coordinates.player_upper_y < coordinates.enemy2_upper_y) 
+                    || (coordinates.player_right_x < coordinates.enemy2_right_x && coordinates.player_right_x > coordinates.enemy2_left_x && coordinates.player_upper_y > coordinates.enemy2_upper_y && coordinates.layer_upper_y < coordinates.enemy2_upper_y)
+                    || (coordinates.player_left_x > coordinates.enemy2_left_x && coordinates.player_left_x < coordinates.enemy2_right_x && coordinates.player_bottom_y > coordinates.enemy2_upper_y && coordinates.player_bottom_y < coordinates.enemy2_bottom_y)
+                    || (coordinates.player_right_x < coordinates.enemy2_right_x && coordinates.player_right_x > coordinates.enemy2_left_x && coordinates.player_bottom_y > coordinates.enemy2_upper_y && coordinates.player_bottom_y < coordinates.enemy2_bottom_y)) {
+                        player.y = 380;  
+                    }
+                
+                if ((coordinates.player_left_x > coordinates.enemy3_left_x && coordinates.player_left_x < coordinates.enemy3_right_x && coordinates.player_upper_y > coordinates.enemy3_upper_y && coordinates.player_upper_y < coordinates.enemy3_upper_y) 
+                    || (coordinates.player_right_x < coordinates.enemy3_right_x && coordinates.player_right_x > coordinates.enemy3_left_x && coordinates.player_upper_y > coordinates.enemy3_upper_y && coordinates.layer_upper_y < coordinates.enemy3_upper_y)
+                    || (coordinates.player_left_x > coordinates.enemy3_left_x && coordinates.player_left_x < coordinates.enemy3_right_x && coordinates.player_bottom_y > coordinates.enemy3_upper_y && coordinates.player_bottom_y < coordinates.enemy3_bottom_y)
+                    || (coordinates.player_right_x < coordinates.enemy3_right_x && coordinates.player_right_x > coordinates.enemy3_left_x && coordinates.player_bottom_y > coordinates.enemy3_upper_y && coordinates.player_bottom_y < coordinates.enemy3_bottom_y)) {
+                        player.y = 380;  
+                    }
+
+
+                // allEnemies.forEach(function (enemy) {
+                //     // if (enemy.x < player.x + 30 && enemy.x + 60 > player.x && enemy.y < player.y + 60 && enemy.y + 40 > player.y) {
+                //     //     player.y = 380;
+                //     // };
+                // });
+
+
             }
                 /* This is called by the update function and loops through all of the
                  * objects within your allEnemies array as defined in app.js and calls

@@ -43,8 +43,9 @@ class Player {
 
     render() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-        if (this.y < 70) {
-        }
+        // if (this.y < 70) {
+        // dodac obsluge punktow
+        // }
     }
 
     update() {}
@@ -81,7 +82,7 @@ let allEnemies = [enemy1, enemy2, enemy3];
 
 // Place the player object in a variable called player
 
-let player = new Player(77,90)
+let player = new Player(77, 90)
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -95,28 +96,28 @@ document.addEventListener('keydown', function (e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
 const costume1 = document.getElementById("costume1");
 const costume2 = document.getElementById("costume2");
 const costume3 = document.getElementById("costume3");
 const costume4 = document.getElementById("costume4");
 const costume5 = document.getElementById("costume5");
 
-costume1.onclick = function() { 
+costume1.onclick = function () {
     changeCostume("images/char-boy.png", 67, 88);
 };
-costume2.onclick = function() { 
+costume2.onclick = function () {
     changeCostume("images/char-cat-girl.png", 68, 90);
 };
- costume3.onclick = function() {
-     changeCostume("images/char-horn-girl.png", 77, 90);
+costume3.onclick = function () {
+    changeCostume("images/char-horn-girl.png", 77, 90);
 };
-costume4.onclick = function() {
+costume4.onclick = function () {
     changeCostume("images/char-princess-girl.png", 76, 89);
 };
-costume5.onclick = function() {
+costume5.onclick = function () {
     changeCostume("images/char-pink-girl.png", 75, 99);
 };
-
 
 function changeCostume(costume, width, height) {
     player.sprite = costume;
