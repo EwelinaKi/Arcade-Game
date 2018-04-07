@@ -1,3 +1,18 @@
 body {
     text-align: center;
+    /* background-image: url(/images/bcg.png); */
+    font-family: 'Pacifico', cursive;
+}
+
+.character {
+    height: 50px;
+    width: auto;
+}
+
+canvas {
+    margin-top: 0px;
+}
+
+h1 {
+    margin-bottom: 0px;
 }

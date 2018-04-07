@@ -35,7 +35,7 @@ class Player {
 
     constructor(width, height) {
         this.sprite = 'images/char-horn-girl.png';
-        this.x = 208;
+        this.x = 210;
         this.y = 380;
         this.width = width;
         this.height = height;
@@ -44,14 +44,13 @@ class Player {
     render() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
         if (this.y < 70) {
-            console.log("point")
         }
     }
 
     update() {}
 
     handleInput(key) {
-        if (key === "left" && this.x >= 0) {
+        if (key === "left" && this.x > 29) {
             this.x = this.x - 30;
             ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
         }
@@ -59,11 +58,11 @@ class Player {
             this.x = this.x + 30;
             ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
         }
-        if (key === "up" && this.y >= 20) {
+        if (key === "up" && this.y > 50) {
             this.y = this.y - 30;
             ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
         }
-        if (key === "down" && this.y <= 410) {
+        if (key === "down" && this.y <= 490) {
             this.y = this.y + 30;
             ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
         }
@@ -86,7 +85,7 @@ let player = new Player(77,90)
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
-document.addEventListener('keyup', function (e) {
+document.addEventListener('keydown', function (e) {
     var allowedKeys = {
         37: 'left',
         38: 'up',
@@ -96,3 +95,31 @@ document.addEventListener('keyup', function (e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+const costume1 = document.getElementById("costume1");
+const costume2 = document.getElementById("costume2");
+const costume3 = document.getElementById("costume3");
+const costume4 = document.getElementById("costume4");
+const costume5 = document.getElementById("costume5");
+
+costume1.onclick = function() { 
+    changeCostume("images/char-boy.png", 67, 88);
+};
+costume2.onclick = function() { 
+    changeCostume("images/char-cat-girl.png", 68, 90);
+};
+ costume3.onclick = function() {
+     changeCostume("images/char-horn-girl.png", 77, 90);
+};
+costume4.onclick = function() {
+    changeCostume("images/char-princess-girl.png", 76, 89);
+};
+costume5.onclick = function() {
+    changeCostume("images/char-pink-girl.png", 75, 99);
+};
+
+
+function changeCostume(costume, width, height) {
+    player.sprite = costume;
+    player.width = width;
+    player.height = height;
+}

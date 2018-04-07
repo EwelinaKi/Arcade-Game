@@ -85,7 +85,7 @@ var Engine = (function (global) {
             function checkCollisions() {
                 allEnemies.forEach(function (enemy) {
                     if (enemy.x < player.x + 30 && enemy1.x + 60 > player.x && enemy.y < player.y + 60 && enemy.y + 40 > player.y) {
-                        player.y = 320;
+                        player.y = 380;
                     };
                 });
             }
@@ -194,7 +194,8 @@ var Engine = (function (global) {
                     'images/Key.png',
                     'images/Rock.png',
                     'images/Selector.png',
-                    'images/Star.png'
+                    'images/Star.png',
+                    // 'images/bcg.png',
 
                 ]);
                 Resources.onReady(init);
