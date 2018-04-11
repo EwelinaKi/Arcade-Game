@@ -43,9 +43,6 @@ class Player {
 
     render() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-        // if (this.y < 70) {
-        // dodac obsluge punktow
-        // }
     }
 
     update() {}
@@ -70,38 +67,44 @@ class Player {
     }
 }
 
+function changeCostume(costume, width, height) {
+    player.sprite = costume;
+    player.width = width;
+    player.height = height;
+}
+
+function game_over(points = "", level = "") {
+    modal.style.display = "block";
+    summaryText = `<p>Level: ${level}</p>
+    <p>Score: ${score}</p>`
+    document.getElementById("text").innerHTML = (summaryText)
+}
+
 // Now instantiate your objects.
 
 let enemy1 = new Enemy(-50, 140, 80);
-let enemy2 = new Enemy(-50, 223, 80);
-let enemy3 = new Enemy(-50, 306, 80);
-
-// Place all enemy objects in an array called allEnemies
+let enemy2 = new Enemy(-150, 223, 80);
+let enemy3 = new Enemy(-250, 306, 80);
 
 let allEnemies = [enemy1, enemy2, enemy3];
-
-// Place the player object in a variable called player
-
 let player = new Player(77, 90)
 
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
-document.addEventListener('keydown', function (e) {
-    var allowedKeys = {
-        37: 'left',
-        38: 'up',
-        39: 'right',
-        40: 'down'
-    };
+let levelChangeDetection = false;
+let score = 0;
+let level = 1;
+let hearts = 5;
 
-    player.handleInput(allowedKeys[e.keyCode]);
-});
-
+const lastLevel = 6;
 const costume1 = document.getElementById("costume1");
 const costume2 = document.getElementById("costume2");
 const costume3 = document.getElementById("costume3");
 const costume4 = document.getElementById("costume4");
 const costume5 = document.getElementById("costume5");
+
+const modal = document.getElementById('myModal');
+const closeModal = document.getElementsByClassName("close")[0];
+const restartButton = document.getElementById("restartButton")
+
 
 costume1.onclick = function () {
     changeCostume("images/char-boy.png", 67, 88);
@@ -119,8 +122,29 @@ costume5.onclick = function () {
     changeCostume("images/char-pink-girl.png", 75, 99);
 };
 
-function changeCostume(costume, width, height) {
-    player.sprite = costume;
-    player.width = width;
-    player.height = height;
+document.addEventListener('keydown', function (e) {
+    var allowedKeys = {
+        37: 'left',
+        38: 'up',
+        39: 'right',
+        40: 'down'
+    };
+
+    player.handleInput(allowedKeys[e.keyCode]);
+});
+
+restartButton.onclick = function() {
+    //TODO reload page
+    location = location
+}
+
+closeModal.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
 }

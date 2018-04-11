@@ -14,246 +14,345 @@
  */
 
 var Engine = (function (global) {
-            /* Predefine the variables we'll be using within this scope,
-             * create the canvas element, grab the 2D context for that canvas
-             * set the canvas elements height/width and add it to the DOM.
-             */
-            var doc = global.document,
-                win = global.window,
-                canvas = doc.createElement('canvas'),
-                ctx = canvas.getContext('2d'),
-                lastTime;
+    /* Predefine the variables we'll be using within this scope,
+     * create the canvas element, grab the 2D context for that canvas
+     * set the canvas elements height/width and add it to the DOM.
+     */
+    var doc = global.document,
+        win = global.window,
+        canvas = doc.createElement('canvas'),
+        ctx = canvas.getContext('2d'),
+        lastTime;
 
-            canvas.width = 505;
-            canvas.height = 606;
-            doc.body.appendChild(canvas);
+    canvas.width = 505;
+    canvas.height = 606;
+    doc.body.appendChild(canvas);
 
-            /* This function serves as the kickoff point for the game loop itself
-             * and handles properly calling the update and render methods.
-             */
-            function main() {
-                /* Get our time delta information which is required if your game
-                 * requires smooth animation. Because everyone's computer processes
-                 * instructions at different speeds we need a constant value that
-                 * would be the same for everyone (regardless of how fast their
-                 * computer is) - hurray time!
-                 */
-                var now = Date.now(),
-                    dt = (now - lastTime) / 1000.0;
+    ctx.font = "20px Pacifico";
+    ctx.fillText("Level:", 10, 35);
 
-                /* Call our update/render functions, pass along the time delta to
-                 * our update function since it may be used for smooth animation.
-                 */
-                update(dt);
-                render();
+    /* This function serves as the kickoff point for the game loop itself
+     * and handles properly calling the update and render methods.
+     */
+    function main() {
+        /* Get our time delta information which is required if your game
+         * requires smooth animation. Because everyone's computer processes
+         * instructions at different speeds we need a constant value that
+         * would be the same for everyone (regardless of how fast their
+         * computer is) - hurray time!
+         */
+        var now = Date.now(),
+            dt = (now - lastTime) / 1000.0;
 
-                /* Set our lastTime variable which is used to determine the time delta
-                 * for the next time this function is called.
-                 */
-                lastTime = now;
+        /* Call our update/render functions, pass along the time delta to
+         * our update function since it may be used for smooth animation.
+         */
+        update(dt);
+        render();
 
-                /* Use the browser's requestAnimationFrame function to call this
-                 * function again as soon as the browser is able to draw another frame.
-                 */
-                win.requestAnimationFrame(main);
+        /* Set our lastTime variable which is used to determine the time delta
+         * for the next time this function is called.
+         */
+        lastTime = now;
+
+        /* Use the browser's requestAnimationFrame function to call this
+         * function again as soon as the browser is able to draw another frame.
+         */
+        win.requestAnimationFrame(main);
+    }
+
+    /* This function does some initial setup that should only occur once,
+     * particularly setting the lastTime variable that is required for the
+     * game loop.
+     */
+    function init() {
+        reset();
+        lastTime = Date.now();
+        main();
+    }
+
+    /* This function is called by main (our game loop) and itself calls all
+     * of the functions which may need to update entity's data. Based on how
+     * you implement your collision detection (when two entities occupy the
+     * same space, for instance when your character should die), you may find
+     * the need to add an additional function call here. For now, we've left
+     * it commented out - you may or may not want to implement this
+     * functionality this way (you could just implement collision detection
+     * on the entities themselves within your app.js file).
+     */
+    function update(dt) {
+        if (levelChangeDetection) {
+            levelChangeDetection = false;
+            switch (level) {
+                case 2:
+                    enemy1.x = -50;
+                    enemy1.speed = 80;
+                    enemy2.x = -50;
+                    enemy2.speed = 280;
+                    enemy3.x = -50;
+                    enemy3.speed = 80;
+                    break
+                case 3:
+                    enemy1.x = -50;
+                    enemy1.speed = 80;
+                    enemy2.x = -300;
+                    enemy2.speed = 200;
+                    enemy3.x = -500;
+                    enemy3.speed = 150;
+                    break
+                case 4:
+                    enemy1.x = -50;
+                    enemy1.speed = 200;
+                    enemy2.x = -350;
+                    enemy2.speed = 200;
+                    enemy3.x = -650;
+                    enemy3.speed = 200;
+                    break
+                case 5:
+                    enemy1.x = -100;
+                    enemy1.speed = 300;
+                    enemy2.x = -50;
+                    enemy2.speed = 50;
+                    enemy3.x = -100;
+                    enemy3.speed = 150;
+                    break
             }
-
-            /* This function does some initial setup that should only occur once,
-             * particularly setting the lastTime variable that is required for the
-             * game loop.
-             */
-            function init() {
-                reset();
-                lastTime = Date.now();
-                main();
+        }
+        updateEntities(dt);
+        cornersCoordinates = calculateCornersCoordinates();
+        checkCollisions(cornersCoordinates);
+        if (hearts === 0) {
+            game_over(score, level)
+        }
+        if (player.y < 70) {
+            score++;
+            level++;
+            if (level === lastLevel) {
+                game_over(score, level - 1)
             }
+            levelChangeDetection = true;
+            player.x = 210;
+            player.y = 380;
+        }
 
-            /* This function is called by main (our game loop) and itself calls all
-             * of the functions which may need to update entity's data. Based on how
-             * you implement your collision detection (when two entities occupy the
-             * same space, for instance when your character should die), you may find
-             * the need to add an additional function call here. For now, we've left
-             * it commented out - you may or may not want to implement this
-             * functionality this way (you could just implement collision detection
-             * on the entities themselves within your app.js file).
-             */
-            function update(dt) {
-                updateEntities(dt);
-                cornersCoordinates = calculateCornersCoordinates();
-                checkCollisions(cornersCoordinates);
+    }
+
+    function calculateCornersCoordinates() {
+        let coordinates = {
+            player_left_x: player.x,
+            player_right_x: player.x + player.width,
+            player_upper_y: player.y,
+            player_bottom_y: player.y + player.height,
+
+            enemy1_left_x: enemy1.x,
+            enemy1_right_x: enemy1.x + enemy1.width,
+            enemy1_upper_y: enemy1.y,
+            enemy1_bottom_y: enemy1.y + enemy1.height,
+
+            enemy2_left_x: enemy2.x,
+            enemy2_right_x: enemy2.x + enemy2.width,
+            enemy2_upper_y: enemy2.y,
+            enemy2_bottom_y: enemy2.y + enemy2.height,
+
+            enemy3_left_x: enemy3.x,
+            enemy3_right_x: enemy3.x + enemy3.width,
+            enemy3_upper_y: enemy3.y,
+            enemy3_bottom_y: enemy3.y + enemy3.height,
+        }
+        return coordinates;
+    }
+
+    function checkCollisions(coordinates) {
+
+        // collisions with enemies
+        if ((coordinates.player_left_x > coordinates.enemy1_left_x && coordinates.player_left_x < coordinates.enemy1_right_x && coordinates.player_upper_y > coordinates.enemy1_upper_y && coordinates.player_upper_y < coordinates.enemy1_upper_y)
+            || (coordinates.player_right_x < coordinates.enemy1_right_x && coordinates.player_right_x > coordinates.enemy1_left_x && coordinates.player_upper_y > coordinates.enemy1_upper_y && coordinates.layer_upper_y < coordinates.enemy1_upper_y)
+            || (coordinates.player_left_x > coordinates.enemy1_left_x && coordinates.player_left_x < coordinates.enemy1_right_x && coordinates.player_bottom_y > coordinates.enemy1_upper_y && coordinates.player_bottom_y < coordinates.enemy1_bottom_y)
+            || (coordinates.player_right_x < coordinates.enemy1_right_x && coordinates.player_right_x > coordinates.enemy1_left_x && coordinates.player_bottom_y > coordinates.enemy1_upper_y && coordinates.player_bottom_y < coordinates.enemy1_bottom_y)) {
+            player.y = 380;
+            hearts--
+        }
+
+        if ((coordinates.player_left_x > coordinates.enemy2_left_x && coordinates.player_left_x < coordinates.enemy2_right_x && coordinates.player_upper_y > coordinates.enemy2_upper_y && coordinates.player_upper_y < coordinates.enemy2_upper_y)
+            || (coordinates.player_right_x < coordinates.enemy2_right_x && coordinates.player_right_x > coordinates.enemy2_left_x && coordinates.player_upper_y > coordinates.enemy2_upper_y && coordinates.layer_upper_y < coordinates.enemy2_upper_y)
+            || (coordinates.player_left_x > coordinates.enemy2_left_x && coordinates.player_left_x < coordinates.enemy2_right_x && coordinates.player_bottom_y > coordinates.enemy2_upper_y && coordinates.player_bottom_y < coordinates.enemy2_bottom_y)
+            || (coordinates.player_right_x < coordinates.enemy2_right_x && coordinates.player_right_x > coordinates.enemy2_left_x && coordinates.player_bottom_y > coordinates.enemy2_upper_y && coordinates.player_bottom_y < coordinates.enemy2_bottom_y)) {
+            player.y = 380;
+            hearts--
+        }
+
+        if ((coordinates.player_left_x > coordinates.enemy3_left_x && coordinates.player_left_x < coordinates.enemy3_right_x && coordinates.player_upper_y > coordinates.enemy3_upper_y && coordinates.player_upper_y < coordinates.enemy3_upper_y)
+            || (coordinates.player_right_x < coordinates.enemy3_right_x && coordinates.player_right_x > coordinates.enemy3_left_x && coordinates.player_upper_y > coordinates.enemy3_upper_y && coordinates.layer_upper_y < coordinates.enemy3_upper_y)
+            || (coordinates.player_left_x > coordinates.enemy3_left_x && coordinates.player_left_x < coordinates.enemy3_right_x && coordinates.player_bottom_y > coordinates.enemy3_upper_y && coordinates.player_bottom_y < coordinates.enemy3_bottom_y)
+            || (coordinates.player_right_x < coordinates.enemy3_right_x && coordinates.player_right_x > coordinates.enemy3_left_x && coordinates.player_bottom_y > coordinates.enemy3_upper_y && coordinates.player_bottom_y < coordinates.enemy3_bottom_y)) {
+            player.y = 380;
+            hearts--
+        }
+
+        // TODO collisions with gems
+    }
+
+
+    /* This is called by the update function and loops through all of the
+     * objects within your allEnemies array as defined in app.js and calls
+     * their update() methods. It will then call the update function for your
+     * player object. These update methods should focus purely on updating
+     * the data/properties related to the object. Do your drawing in your
+     * render methods.
+     */
+    function updateEntities(dt) {
+        allEnemies.forEach(function (enemy) {
+            enemy.update(dt);
+        });
+        player.update();
+    }
+
+    /* This function initially draws the "game level", it will then call
+     * the renderEntities function. Remember, this function is called every
+     * game tick (or loop of the game engine) because that's how games work -
+     * they are flipbooks creating the illusion of animation but in reality
+     * they are just drawing the entire screen over and over.
+     */
+    function render() {
+        /* This array holds the relative URL to the image used
+         * for that particular row of the game level.
+         */
+
+        var rowImages = [
+                'images/water-block.png', // Top row is water
+                'images/stone-block.png', // Row 1 of 3 of stone
+                'images/stone-block.png', // Row 2 of 3 of stone
+                'images/stone-block.png', // Row 3 of 3 of stone
+                'images/grass-block.png', // Row 1 of 2 of grass
+                'images/grass-block.png' // Row 2 of 2 of grass
+            ],
+            numRows = 6,
+            numCols = 5,
+            row, col;
+
+        // Before drawing, clear existing canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        ctx.fillText("Level: ", 10, 35);
+        ctx.fillText(level, 80, 35);
+        ctx.fillText("Score: ", 200, 35);
+        ctx.fillText(score, 270, 35);
+
+        for (i = 0; i <= hearts; i++) {
+            ctx.drawImage(Resources.get('images/Heart.png'), 330 + 30 * i, 17, 25, 25);
+
+        }
+
+        /* Loop through the number of rows and columns we've defined above
+         * and, using the rowImages array, draw the correct image for that
+         * portion of the "grid"
+         */
+        for (row = 0; row < numRows; row++) {
+            for (col = 0; col < numCols; col++) {
+                /* The drawImage function of the canvas' context element
+                 * requires 3 parameters: the image to draw, the x coordinate
+                 * to start drawing and the y coordinate to start drawing.
+                 * We're using our Resources helpers to refer to our images
+                 * so that we get the benefits of caching these images, since
+                 * we're using them over and over.
+                 */
+                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
+        }
 
-            function calculateCornersCoordinates() {
-                let coordinates = {
-                    player_left_x: player.x,
-                    player_right_x: player.x + player.width,
-                    player_upper_y: player.y,
-                    player_bottom_y: player.y + player.height,
+        renderEntities();
+    }
 
-                    enemy1_left_x: enemy1.x,
-                    enemy1_right_x: enemy1.x + enemy1.width,
-                    enemy1_upper_y: enemy1.y,
-                    enemy1_bottom_y: enemy1.y + enemy1.height,
+    /* This function is called by the render function and is called on each game
+     * tick. Its purpose is to then call the render functions you have defined
+     * on your enemy and player entities within app.js
+     */
 
-                    enemy2_left_x: enemy2.x,
-                    enemy2_right_x: enemy2.x + enemy2.width,
-                    enemy2_upper_y: enemy2.y,
-                    enemy2_bottom_y: enemy2.y + enemy2.height,
+    function renderEntities() {
+        /* Loop through all of the objects within the allEnemies array and call
+         * the render function you have defined.
+         */
+        allEnemies.forEach(function (enemy) {
+            enemy.render();
+        });
 
-                    enemy3_left_x: enemy3.x,
-                    enemy3_right_x: enemy3.x + enemy3.width,
-                    enemy3_upper_y: enemy3.y,
-                    enemy3_bottom_y: enemy3.y + enemy3.height,
-                }
-                return coordinates;
-            }
+        player.render();
+    }
 
-            function checkCollisions(coordinates) {
+    /* This function does nothing but it could have been a good place to
+     * handle game reset states - maybe a new game menu or a game over screen
+     * those sorts of things. It's only called once by the init() method.
+     */
+    function reset() {
+        // switch (level) {
+        // case 1:
+        //     enemy1.x = -50
+        //     enemy1.speed = 80
+        //     enemy2.x = -150
+        //     enemy2.speed = 80
+        //     enemy3.x = -250
+        //     enemy3.speed = 80
+        //  case 2:
+        //      enemy1.x = -50
+        //      enemy1.speed = 80
+        //      enemy2.x = -50
+        //      enemy2.speed = 280
+        //      enemy3.x = -50
+        //      enemy3.speed = 80
+        // case 3:
+        //     enemy1.x = -50
+        //     enemy1.speed = 80
+        //     enemy2.x = -300
+        //     enemy2.speed = 200
+        //     enemy3.x = -500
+        //     enemy3.speed = 150
+        // case 4:
+        //     enemy1.x = -50
+        //     enemy1.speed = 200
+        //     enemy2.x = -350
+        //     enemy2.speed = 200
+        //     enemy3.x = -650
+        //     enemy3.speed = 200
+        // case 5:
+        //     enemy1.x = -100
+        //     enemy1.speed = 300
+        //     enemy2.x = -50
+        //     enemy2.speed = 50
+        //     enemy3.x = -100
+        //     enemy3.speed = 150
+        // }
+    }
 
-                if ((coordinates.player_left_x > coordinates.enemy1_left_x && coordinates.player_left_x < coordinates.enemy1_right_x && coordinates.player_upper_y > coordinates.enemy1_upper_y && coordinates.player_upper_y < coordinates.enemy1_upper_y) 
-                    || (coordinates.player_right_x < coordinates.enemy1_right_x && coordinates.player_right_x > coordinates.enemy1_left_x && coordinates.player_upper_y > coordinates.enemy1_upper_y && coordinates.layer_upper_y < coordinates.enemy1_upper_y)
-                    || (coordinates.player_left_x > coordinates.enemy1_left_x && coordinates.player_left_x < coordinates.enemy1_right_x && coordinates.player_bottom_y > coordinates.enemy1_upper_y && coordinates.player_bottom_y < coordinates.enemy1_bottom_y)
-                    || (coordinates.player_right_x < coordinates.enemy1_right_x && coordinates.player_right_x > coordinates.enemy1_left_x && coordinates.player_bottom_y > coordinates.enemy1_upper_y && coordinates.player_bottom_y < coordinates.enemy1_bottom_y)) {
-                        player.y = 380;  
-                    }
+    /* Go ahead and load all of the images we know we're going to need to
+     * draw our game level. Then set init as the callback method, so that when
+     * all of these images are properly loaded our game will start.
+     */
+    Resources.load([
+        'images/stone-block.png',
+        'images/water-block.png',
+        'images/grass-block.png',
+        'images/enemy-bug.png',
+        'images/char-boy.png',
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png',
+        'images/Gem Blue.png',
+        'images/Gem Green.png',
+        'images/Gem Orange.png',
+        'images/Heart.png',
+        'images/Key.png',
+        'images/Rock.png',
+        'images/Selector.png',
+        'images/Star.png',
+        // 'images/bcg.png',
 
-                if ((coordinates.player_left_x > coordinates.enemy2_left_x && coordinates.player_left_x < coordinates.enemy2_right_x && coordinates.player_upper_y > coordinates.enemy2_upper_y && coordinates.player_upper_y < coordinates.enemy2_upper_y) 
-                    || (coordinates.player_right_x < coordinates.enemy2_right_x && coordinates.player_right_x > coordinates.enemy2_left_x && coordinates.player_upper_y > coordinates.enemy2_upper_y && coordinates.layer_upper_y < coordinates.enemy2_upper_y)
-                    || (coordinates.player_left_x > coordinates.enemy2_left_x && coordinates.player_left_x < coordinates.enemy2_right_x && coordinates.player_bottom_y > coordinates.enemy2_upper_y && coordinates.player_bottom_y < coordinates.enemy2_bottom_y)
-                    || (coordinates.player_right_x < coordinates.enemy2_right_x && coordinates.player_right_x > coordinates.enemy2_left_x && coordinates.player_bottom_y > coordinates.enemy2_upper_y && coordinates.player_bottom_y < coordinates.enemy2_bottom_y)) {
-                        player.y = 380;  
-                    }
-                
-                if ((coordinates.player_left_x > coordinates.enemy3_left_x && coordinates.player_left_x < coordinates.enemy3_right_x && coordinates.player_upper_y > coordinates.enemy3_upper_y && coordinates.player_upper_y < coordinates.enemy3_upper_y) 
-                    || (coordinates.player_right_x < coordinates.enemy3_right_x && coordinates.player_right_x > coordinates.enemy3_left_x && coordinates.player_upper_y > coordinates.enemy3_upper_y && coordinates.layer_upper_y < coordinates.enemy3_upper_y)
-                    || (coordinates.player_left_x > coordinates.enemy3_left_x && coordinates.player_left_x < coordinates.enemy3_right_x && coordinates.player_bottom_y > coordinates.enemy3_upper_y && coordinates.player_bottom_y < coordinates.enemy3_bottom_y)
-                    || (coordinates.player_right_x < coordinates.enemy3_right_x && coordinates.player_right_x > coordinates.enemy3_left_x && coordinates.player_bottom_y > coordinates.enemy3_upper_y && coordinates.player_bottom_y < coordinates.enemy3_bottom_y)) {
-                        player.y = 380;  
-                    }
+    ]);
+    Resources.onReady(init);
 
-
-                // allEnemies.forEach(function (enemy) {
-                //     // if (enemy.x < player.x + 30 && enemy.x + 60 > player.x && enemy.y < player.y + 60 && enemy.y + 40 > player.y) {
-                //     //     player.y = 380;
-                //     // };
-                // });
-
-
-            }
-                /* This is called by the update function and loops through all of the
-                 * objects within your allEnemies array as defined in app.js and calls
-                 * their update() methods. It will then call the update function for your
-                 * player object. These update methods should focus purely on updating
-                 * the data/properties related to the object. Do your drawing in your
-                 * render methods.
-                 */
-                function updateEntities(dt) {
-                    allEnemies.forEach(function (enemy) {
-                        enemy.update(dt);
-                    });
-                    player.update();
-                }
-
-                /* This function initially draws the "game level", it will then call
-                 * the renderEntities function. Remember, this function is called every
-                 * game tick (or loop of the game engine) because that's how games work -
-                 * they are flipbooks creating the illusion of animation but in reality
-                 * they are just drawing the entire screen over and over.
-                 */
-                function render() {
-                    /* This array holds the relative URL to the image used
-                     * for that particular row of the game level.
-                     */
-                    var rowImages = [
-                            'images/water-block.png', // Top row is water
-                            'images/stone-block.png', // Row 1 of 3 of stone
-                            'images/stone-block.png', // Row 2 of 3 of stone
-                            'images/stone-block.png', // Row 3 of 3 of stone
-                            'images/grass-block.png', // Row 1 of 2 of grass
-                            'images/grass-block.png' // Row 2 of 2 of grass
-                        ],
-                        numRows = 6,
-                        numCols = 5,
-                        row, col;
-
-                    // Before drawing, clear existing canvas
-                    ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-                    /* Loop through the number of rows and columns we've defined above
-                     * and, using the rowImages array, draw the correct image for that
-                     * portion of the "grid"
-                     */
-                    for (row = 0; row < numRows; row++) {
-                        for (col = 0; col < numCols; col++) {
-                            /* The drawImage function of the canvas' context element
-                             * requires 3 parameters: the image to draw, the x coordinate
-                             * to start drawing and the y coordinate to start drawing.
-                             * We're using our Resources helpers to refer to our images
-                             * so that we get the benefits of caching these images, since
-                             * we're using them over and over.
-                             */
-                            ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
-                        }
-                    }
-
-                    renderEntities();
-                }
-
-                /* This function is called by the render function and is called on each game
-                 * tick. Its purpose is to then call the render functions you have defined
-                 * on your enemy and player entities within app.js
-                 */
-
-                function renderEntities() {
-                    /* Loop through all of the objects within the allEnemies array and call
-                     * the render function you have defined.
-                     */
-                    allEnemies.forEach(function (enemy) {
-                        enemy.render();
-                    });
-
-                    player.render();
-                }
-
-                /* This function does nothing but it could have been a good place to
-                 * handle game reset states - maybe a new game menu or a game over screen
-                 * those sorts of things. It's only called once by the init() method.
-                 */
-                function reset() {
-                    // noop
-                }
-
-                /* Go ahead and load all of the images we know we're going to need to
-                 * draw our game level. Then set init as the callback method, so that when
-                 * all of these images are properly loaded our game will start.
-                 */
-                Resources.load([
-                    'images/stone-block.png',
-                    'images/water-block.png',
-                    'images/grass-block.png',
-                    'images/enemy-bug.png',
-                    'images/char-boy.png',
-                    'images/char-boy.png',
-                    'images/char-cat-girl.png',
-                    'images/char-horn-girl.png',
-                    'images/char-pink-girl.png',
-                    'images/char-princess-girl.png',
-                    'images/Gem Blue.png',
-                    'images/Gem Green.png',
-                    'images/Gem Orange.png',
-                    'images/Heart.png',
-                    'images/Key.png',
-                    'images/Rock.png',
-                    'images/Selector.png',
-                    'images/Star.png',
-                    // 'images/bcg.png',
-
-                ]);
-                Resources.onReady(init);
-
-                /* Assign the canvas' context object to the global variable (the window
-                 * object when run in a browser) so that developers can use it more easily
-                 * from within their app.js files.
-                 */
-                global.ctx = ctx;
-            })(this);
+    /* Assign the canvas' context object to the global variable (the window
+     * object when run in a browser) so that developers can use it more easily
+     * from within their app.js files.
+     */
+    global.ctx = ctx;
+})(this);
