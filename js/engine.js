@@ -13,12 +13,12 @@
  * writing app.js a little simpler to work with.
  */
 
-var Engine = (function (global) {
+let Engine = (function (global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
      * set the canvas elements height/width and add it to the DOM.
      */
-    var doc = global.document,
+    let doc = global.document,
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
@@ -41,7 +41,7 @@ var Engine = (function (global) {
          * would be the same for everyone (regardless of how fast their
          * computer is) - hurray time!
          */
-        var now = Date.now(),
+        let now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
         /* Call our update/render functions, pass along the time delta to
@@ -83,6 +83,15 @@ var Engine = (function (global) {
     function update(dt) {
         if (levelChangeDetection) {
             levelChangeDetection = false;
+            isBlueGemCollected = false;
+            isOrangeGemCollected = false;
+            isGreenGemCollected = false;
+            orangeGem.x = gemOrangePositions.sample()[0];
+            orangeGem.y = gemOrangePositions.sample()[1];
+            blueGem.x = gemBluePositions.sample()[0];
+            blueGem.y = gemBluePositions.sample()[1];
+            greenGem.x = gemGreenPositions.sample()[0];
+            greenGem.y = gemGreenPositions.sample()[1];
             switch (level) {
                 case 2:
                     enemy1.x = -50;
@@ -91,7 +100,7 @@ var Engine = (function (global) {
                     enemy2.speed = 280;
                     enemy3.x = -50;
                     enemy3.speed = 80;
-                    break
+                    break;
                 case 3:
                     enemy1.x = -50;
                     enemy1.speed = 80;
@@ -99,7 +108,7 @@ var Engine = (function (global) {
                     enemy2.speed = 200;
                     enemy3.x = -500;
                     enemy3.speed = 150;
-                    break
+                    break;
                 case 4:
                     enemy1.x = -50;
                     enemy1.speed = 200;
@@ -107,7 +116,7 @@ var Engine = (function (global) {
                     enemy2.speed = 200;
                     enemy3.x = -650;
                     enemy3.speed = 200;
-                    break
+                    break;
                 case 5:
                     enemy1.x = -100;
                     enemy1.speed = 300;
@@ -115,13 +124,13 @@ var Engine = (function (global) {
                     enemy2.speed = 50;
                     enemy3.x = -100;
                     enemy3.speed = 150;
-                    break
+                    break;
             }
         }
         updateEntities(dt);
         cornersCoordinates = calculateCornersCoordinates();
         checkCollisions(cornersCoordinates);
-        if (hearts === 0) {
+        if (hearts === -1) {
             game_over(score, level)
         }
         if (player.y < 70) {
@@ -158,7 +167,24 @@ var Engine = (function (global) {
             enemy3_right_x: enemy3.x + enemy3.width,
             enemy3_upper_y: enemy3.y,
             enemy3_bottom_y: enemy3.y + enemy3.height,
-        }
+
+            orangeGem_left_x: orangeGem.x,
+            orangeGem_right_x: orangeGem.x + orangeGem.width,
+            orangeGem_upper_y: orangeGem.y,
+            orangeGem_bottom_y: orangeGem.y + orangeGem.height,
+
+            greenGem_left_x: greenGem.x,
+            greenGem_right_x: greenGem.x + greenGem.width,
+            greenGem_upper_y: greenGem.y,
+            greenGem_bottom_y: greenGem.y + greenGem.height,
+
+            blueGem_left_x: blueGem.x,
+            blueGem_right_x: blueGem.x + blueGem.width,
+            blueGem_upper_y: blueGem.y,
+            blueGem_bottom_y: blueGem.y + blueGem.height,
+
+        };
+
         return coordinates;
     }
 
@@ -166,7 +192,7 @@ var Engine = (function (global) {
 
         // collisions with enemies
         if ((coordinates.player_left_x > coordinates.enemy1_left_x && coordinates.player_left_x < coordinates.enemy1_right_x && coordinates.player_upper_y > coordinates.enemy1_upper_y && coordinates.player_upper_y < coordinates.enemy1_upper_y)
-            || (coordinates.player_right_x < coordinates.enemy1_right_x && coordinates.player_right_x > coordinates.enemy1_left_x && coordinates.player_upper_y > coordinates.enemy1_upper_y && coordinates.layer_upper_y < coordinates.enemy1_upper_y)
+            || (coordinates.player_right_x < coordinates.enemy1_right_x && coordinates.player_right_x > coordinates.enemy1_left_x && coordinates.player_upper_y > coordinates.enemy1_upper_y && coordinates.player_upper_y < coordinates.enemy1_upper_y)
             || (coordinates.player_left_x > coordinates.enemy1_left_x && coordinates.player_left_x < coordinates.enemy1_right_x && coordinates.player_bottom_y > coordinates.enemy1_upper_y && coordinates.player_bottom_y < coordinates.enemy1_bottom_y)
             || (coordinates.player_right_x < coordinates.enemy1_right_x && coordinates.player_right_x > coordinates.enemy1_left_x && coordinates.player_bottom_y > coordinates.enemy1_upper_y && coordinates.player_bottom_y < coordinates.enemy1_bottom_y)) {
             player.y = 380;
@@ -174,7 +200,7 @@ var Engine = (function (global) {
         }
 
         if ((coordinates.player_left_x > coordinates.enemy2_left_x && coordinates.player_left_x < coordinates.enemy2_right_x && coordinates.player_upper_y > coordinates.enemy2_upper_y && coordinates.player_upper_y < coordinates.enemy2_upper_y)
-            || (coordinates.player_right_x < coordinates.enemy2_right_x && coordinates.player_right_x > coordinates.enemy2_left_x && coordinates.player_upper_y > coordinates.enemy2_upper_y && coordinates.layer_upper_y < coordinates.enemy2_upper_y)
+            || (coordinates.player_right_x < coordinates.enemy2_right_x && coordinates.player_right_x > coordinates.enemy2_left_x && coordinates.player_upper_y > coordinates.enemy2_upper_y && coordinates.player_upper_y < coordinates.enemy2_upper_y)
             || (coordinates.player_left_x > coordinates.enemy2_left_x && coordinates.player_left_x < coordinates.enemy2_right_x && coordinates.player_bottom_y > coordinates.enemy2_upper_y && coordinates.player_bottom_y < coordinates.enemy2_bottom_y)
             || (coordinates.player_right_x < coordinates.enemy2_right_x && coordinates.player_right_x > coordinates.enemy2_left_x && coordinates.player_bottom_y > coordinates.enemy2_upper_y && coordinates.player_bottom_y < coordinates.enemy2_bottom_y)) {
             player.y = 380;
@@ -182,14 +208,47 @@ var Engine = (function (global) {
         }
 
         if ((coordinates.player_left_x > coordinates.enemy3_left_x && coordinates.player_left_x < coordinates.enemy3_right_x && coordinates.player_upper_y > coordinates.enemy3_upper_y && coordinates.player_upper_y < coordinates.enemy3_upper_y)
-            || (coordinates.player_right_x < coordinates.enemy3_right_x && coordinates.player_right_x > coordinates.enemy3_left_x && coordinates.player_upper_y > coordinates.enemy3_upper_y && coordinates.layer_upper_y < coordinates.enemy3_upper_y)
+            || (coordinates.player_right_x < coordinates.enemy3_right_x && coordinates.player_right_x > coordinates.enemy3_left_x && coordinates.player_upper_y > coordinates.enemy3_upper_y && coordinates.player_upper_y < coordinates.enemy3_upper_y)
             || (coordinates.player_left_x > coordinates.enemy3_left_x && coordinates.player_left_x < coordinates.enemy3_right_x && coordinates.player_bottom_y > coordinates.enemy3_upper_y && coordinates.player_bottom_y < coordinates.enemy3_bottom_y)
             || (coordinates.player_right_x < coordinates.enemy3_right_x && coordinates.player_right_x > coordinates.enemy3_left_x && coordinates.player_bottom_y > coordinates.enemy3_upper_y && coordinates.player_bottom_y < coordinates.enemy3_bottom_y)) {
             player.y = 380;
             hearts--
         }
 
-        // TODO collisions with gems
+        // collisions with gems
+        if (!(isOrangeGemCollected)) {
+            if ((coordinates.player_left_x > coordinates.orangeGem_left_x && coordinates.player_left_x < coordinates.orangeGem_right_x && coordinates.player_upper_y > coordinates.orangeGem_upper_y && coordinates.player_upper_y < coordinates.orangeGem_upper_y)
+                || (coordinates.player_right_x < coordinates.orangeGem_right_x && coordinates.player_right_x > coordinates.orangeGem_left_x && coordinates.player_upper_y > coordinates.orangeGem_upper_y && coordinates.player_upper_y < coordinates.orangeGem_upper_y)
+                || (coordinates.player_left_x > coordinates.orangeGem_left_x && coordinates.player_left_x < coordinates.orangeGem_right_x && coordinates.player_bottom_y > coordinates.orangeGem_upper_y && coordinates.player_bottom_y < coordinates.orangeGem_bottom_y)
+                || (coordinates.player_right_x < coordinates.orangeGem_right_x && coordinates.player_right_x > coordinates.orangeGem_left_x && coordinates.player_bottom_y > coordinates.orangeGem_upper_y && coordinates.player_bottom_y < coordinates.orangeGem_bottom_y)) {
+                score = score + 150;
+                isOrangeGemCollected = true;
+            }
+
+        }
+
+        if (!(isBlueGemCollected)) {
+            if ((coordinates.player_left_x > coordinates.blueGem_left_x && coordinates.player_left_x < coordinates.blueGem_right_x && coordinates.player_upper_y > coordinates.blueGem_upper_y && coordinates.player_upper_y < coordinates.blueGem_upper_y)
+                || (coordinates.player_right_x < coordinates.blueGem_right_x && coordinates.player_right_x > coordinates.blueGem_left_x && coordinates.player_upper_y > coordinates.blueGem_upper_y && coordinates.player_upper_y < coordinates.blueGem_upper_y)
+                || (coordinates.player_left_x > coordinates.blueGem_left_x && coordinates.player_left_x < coordinates.blueGem_right_x && coordinates.player_bottom_y > coordinates.blueGem_upper_y && coordinates.player_bottom_y < coordinates.blueGem_bottom_y)
+                || (coordinates.player_right_x < coordinates.blueGem_right_x && coordinates.player_right_x > coordinates.blueGem_left_x && coordinates.player_bottom_y > coordinates.blueGem_upper_y && coordinates.player_bottom_y < coordinates.blueGem_bottom_y)) {
+                score = score + 50;
+                isBlueGemCollected = true;
+            }
+
+        }
+
+        if (!(isGreenGemCollected)) {
+            if ((coordinates.player_left_x > coordinates.greenGem_left_x && coordinates.player_left_x < coordinates.greenGem_right_x && coordinates.player_upper_y > coordinates.greenGem_upper_y && coordinates.player_upper_y < coordinates.greenGem_upper_y)
+                || (coordinates.player_right_x < coordinates.greenGem_right_x && coordinates.player_right_x > coordinates.greenGem_left_x && coordinates.player_upper_y > coordinates.greenGem_upper_y && coordinates.player_upper_y < coordinates.greenGem_upper_y)
+                || (coordinates.player_left_x > coordinates.greenGem_left_x && coordinates.player_left_x < coordinates.greenGem_right_x && coordinates.player_bottom_y > coordinates.greenGem_upper_y && coordinates.player_bottom_y < coordinates.greenGem_bottom_y)
+                || (coordinates.player_right_x < coordinates.greenGem_right_x && coordinates.player_right_x > coordinates.greenGem_left_x && coordinates.player_bottom_y > coordinates.greenGem_upper_y && coordinates.player_bottom_y < coordinates.greenGem_bottom_y)) {
+                score = score + 10;
+                isGreenGemCollected = true;
+            }
+
+        }
+
     }
 
 
@@ -271,11 +330,22 @@ var Engine = (function (global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
+        if (!(isOrangeGemCollected)) {
+            orangeGem.render();
+        }
+        if (!(isGreenGemCollected)) {
+            greenGem.render();
+        }
+        if (!(isBlueGemCollected)) {
+            blueGem.render();
+        }
+
         allEnemies.forEach(function (enemy) {
             enemy.render();
         });
 
         player.render();
+
     }
 
     /* This function does nothing but it could have been a good place to
@@ -283,43 +353,7 @@ var Engine = (function (global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // switch (level) {
-        // case 1:
-        //     enemy1.x = -50
-        //     enemy1.speed = 80
-        //     enemy2.x = -150
-        //     enemy2.speed = 80
-        //     enemy3.x = -250
-        //     enemy3.speed = 80
-        //  case 2:
-        //      enemy1.x = -50
-        //      enemy1.speed = 80
-        //      enemy2.x = -50
-        //      enemy2.speed = 280
-        //      enemy3.x = -50
-        //      enemy3.speed = 80
-        // case 3:
-        //     enemy1.x = -50
-        //     enemy1.speed = 80
-        //     enemy2.x = -300
-        //     enemy2.speed = 200
-        //     enemy3.x = -500
-        //     enemy3.speed = 150
-        // case 4:
-        //     enemy1.x = -50
-        //     enemy1.speed = 200
-        //     enemy2.x = -350
-        //     enemy2.speed = 200
-        //     enemy3.x = -650
-        //     enemy3.speed = 200
-        // case 5:
-        //     enemy1.x = -100
-        //     enemy1.speed = 300
-        //     enemy2.x = -50
-        //     enemy2.speed = 50
-        //     enemy3.x = -100
-        //     enemy3.speed = 150
-        // }
+
     }
 
     /* Go ahead and load all of the images we know we're going to need to

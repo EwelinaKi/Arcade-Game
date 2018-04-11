@@ -1,3 +1,7 @@
+Array.prototype.sample = function () {
+    return this[Math.floor(Math.random() * this.length)];
+}
+
 class Enemy {
 
     // Variables applied to each of our instances go here,
@@ -45,7 +49,8 @@ class Player {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 
-    update() {}
+    update() {
+    }
 
     handleInput(key) {
         if (key === "left" && this.x > 29) {
@@ -67,6 +72,26 @@ class Player {
     }
 }
 
+class Gem {
+    constructor(img, possiblePositions) {
+        this.sprite = img;
+        this.x = possiblePositions.sample()[0];
+        this.y = possiblePositions.sample()[1];
+        this.width = 101;
+        this.height = 112;
+
+    }
+
+    render() {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 60, 70);
+    }
+
+    update() {
+    }
+
+}
+
+
 function changeCostume(costume, width, height) {
     player.sprite = costume;
     player.width = width;
@@ -82,29 +107,37 @@ function game_over(points = "", level = "") {
 
 // Now instantiate your objects.
 
-let enemy1 = new Enemy(-50, 140, 80);
-let enemy2 = new Enemy(-150, 223, 80);
-let enemy3 = new Enemy(-250, 306, 80);
 
-let allEnemies = [enemy1, enemy2, enemy3];
-let player = new Player(77, 90)
-
-let levelChangeDetection = false;
-let score = 0;
-let level = 1;
-let hearts = 5;
-
+const gemOrangePositions = [[23, 55], [123, 55], [223, 55], [323, 55], [423, 55]];
+const gemGreenPositions = [[23, 140], [123, 140], [223, 140], [323, 140], [423, 140], [23, 225], [123, 225], [223, 225], [323, 225], [423, 225], [23, 310], [123, 310], [223, 310], [323, 310], [423, 310]];
+const gemBluePositions = [[23, 480], [123, 480], [323, 480], [423, 480]];
 const lastLevel = 6;
 const costume1 = document.getElementById("costume1");
 const costume2 = document.getElementById("costume2");
 const costume3 = document.getElementById("costume3");
 const costume4 = document.getElementById("costume4");
 const costume5 = document.getElementById("costume5");
-
 const modal = document.getElementById('myModal');
 const closeModal = document.getElementsByClassName("close")[0];
-const restartButton = document.getElementById("restartButton")
+const restartButton = document.getElementById("restartButton");
 
+let enemy1 = new Enemy(-50, 140, 80);
+let enemy2 = new Enemy(-150, 223, 80);
+let enemy3 = new Enemy(-250, 306, 80);
+
+let allEnemies = [enemy1, enemy2, enemy3];
+let player = new Player(77, 90);
+let orangeGem = new Gem('images/Gem Orange.png', gemOrangePositions);
+let greenGem = new Gem('images/Gem Green.png', gemGreenPositions);
+let blueGem = new Gem('images/Gem Blue.png', gemBluePositions);
+
+let levelChangeDetection = false;
+let isOrangeGemCollected = false;
+let isGreenGemCollected = false;
+let isBlueGemCollected = false;
+let score = 0;
+let level = 1;
+let hearts = 5;
 
 costume1.onclick = function () {
     changeCostume("images/char-boy.png", 67, 88);
@@ -122,7 +155,7 @@ costume5.onclick = function () {
     changeCostume("images/char-pink-girl.png", 75, 99);
 };
 
-document.addEventListener('keydown', function (e) {
+document.addEventListener('keyup', function (e) {
     var allowedKeys = {
         37: 'left',
         38: 'up',
@@ -133,17 +166,16 @@ document.addEventListener('keydown', function (e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
-restartButton.onclick = function() {
-    //TODO reload page
+restartButton.onclick = function () {
     location = location
 }
 
-closeModal.onclick = function() {
+closeModal.onclick = function () {
     modal.style.display = "none";
 }
 
 // When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
+window.onclick = function (event) {
     if (event.target == modal) {
         modal.style.display = "none";
     }
