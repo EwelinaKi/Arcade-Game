@@ -1,6 +1,22 @@
-frontend-nanodegree-arcade-game
-===============================
+#Arcade Game - Udacity nanodegree scholarship project
 
-Students should use this [rubric](https://review.udacity.com/#!/projects/2696458597/rubric) for self-checking their submission. Make sure the functions you write are **object-oriented** - either class functions (like Player and Enemy) or class prototype functions such as Enemy.prototype.checkCollisions, and that the keyword 'this' is used appropriately within your class and class prototype functions to refer to the object the function is called upon. Also be sure that the **readme.md** file is updated with your instructions on both how to 1. Run and 2. Play your arcade game.
+This is a simple arcade game made for Udacity Google Nanodegree Scholarship Program.
 
-For detailed instructions on how to get started, check out this [guide](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true).
+##Project Goals
+
+The goal of this project was:
+* using OOP
+* using HTML5 Canvas
+* writing READMEs
+
+## How to play
+
+Move the sprite with arrow keys to get to the river. For collecting randomly generated gems you will earned an extra points. Every touch of the ladybird enemy decrease number of your hearts. The game has five different levels. You can change your sprite costume just by clicking on new one.
+
+## How to run the game
+
+[Click this link  to play the game](https://ewelinaki.github.io/Udacity-Arcade-Game/) or clone repository and run index.html file in your browser.
+
+
+
+
