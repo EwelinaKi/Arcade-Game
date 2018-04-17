@@ -1,8 +1,8 @@
-#Arcade Game - Udacity nanodegree scholarship project
+# Arcade Game - Udacity nanodegree scholarship project
 
 This is a simple arcade game made for Udacity Google Nanodegree Scholarship Program.
 
-##Project Goals
+## Project Goals
 
 The goal of this project was:
 * using OOP
