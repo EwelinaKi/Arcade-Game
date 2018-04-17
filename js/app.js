@@ -100,7 +100,7 @@ function changeCostume(costume, width, height) {
 
 function game_over(points = "", level = "") {
     modal.style.display = "block";
-    summaryText = `<p>Level: ${level}</p>
+    const summaryText = `<p>Level: ${level}</p>
     <p>Score: ${score}</p>`
     document.getElementById("text").innerHTML = (summaryText)
 }
@@ -156,7 +156,7 @@ costume5.onclick = function () {
 };
 
 document.addEventListener('keyup', function (e) {
-    var allowedKeys = {
+    const allowedKeys = {
         37: 'left',
         38: 'up',
         39: 'right',

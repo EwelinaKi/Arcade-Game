@@ -128,8 +128,7 @@ let Engine = (function (global) {
             }
         }
         updateEntities(dt);
-        cornersCoordinates = calculateCornersCoordinates();
-        checkCollisions(cornersCoordinates);
+        checkCollisions(calculateCornersCoordinates());
         if (hearts === -1) {
             game_over(score, level)
         }
@@ -147,108 +146,142 @@ let Engine = (function (global) {
     }
 
     function calculateCornersCoordinates() {
-        let coordinates = {
-            player_left_x: player.x,
-            player_right_x: player.x + player.width,
-            player_upper_y: player.y,
-            player_bottom_y: player.y + player.height,
+        return {
+            player: {
+                left_x: player.x,
+                right_x: player.x + player.width,
+                upper_y: player.y,
+                bottom_y: player.y + player.height,
+            },
+            enemy1: {
+                left_x: enemy1.x,
+                right_x: enemy1.x + enemy1.width,
+                upper_y: enemy1.y,
+                bottom_y: enemy1.y + enemy1.height,
+            },
+            enemy2: {
+                left_x: enemy2.x,
+                right_x: enemy2.x + enemy2.width,
+                upper_y: enemy2.y,
+                bottom_y: enemy2.y + enemy2.height,
+            },
+            enemy3: {
+                left_x: enemy3.x,
+                right_x: enemy3.x + enemy3.width,
+                upper_y: enemy3.y,
+                bottom_y: enemy3.y + enemy3.height,
+            },
+            orangeGem: {
+                left_x: orangeGem.x,
+                right_x: orangeGem.x + orangeGem.width,
+                upper_y: orangeGem.y,
+                bottom_y: orangeGem.y + orangeGem.height,
+            },
+            greenGem: {
+                left_x: greenGem.x,
+                right_x: greenGem.x + greenGem.width,
+                upper_y: greenGem.y,
+                bottom_y: greenGem.y + greenGem.height,
+            },
+            blueGem: {
+                left_x: blueGem.x,
+                right_x: blueGem.x + blueGem.width,
+                upper_y: blueGem.y,
+                bottom_y: blueGem.y + blueGem.height,
+            }
+        }
+    }
 
-            enemy1_left_x: enemy1.x,
-            enemy1_right_x: enemy1.x + enemy1.width,
-            enemy1_upper_y: enemy1.y,
-            enemy1_bottom_y: enemy1.y + enemy1.height,
+    function crashAtFirstCornerOf(player, enemy) {
+        return (
+            player.left_x > enemy.left_x &&
+            player.left_x < enemy.right_x &&
+            player.upper_y > enemy.upper_y &&
+            player.upper_y < enemy.upper_y
+        )
+    }
 
-            enemy2_left_x: enemy2.x,
-            enemy2_right_x: enemy2.x + enemy2.width,
-            enemy2_upper_y: enemy2.y,
-            enemy2_bottom_y: enemy2.y + enemy2.height,
+    function crashAtSecondCornerOf(player, enemy) {
+        return (
+            player.right_x < enemy.right_x &&
+            player.right_x > enemy.left_x &&
+            player.upper_y > enemy.upper_y &&
+            player.upper_y < enemy.upper_y
+        )
+    }
 
-            enemy3_left_x: enemy3.x,
-            enemy3_right_x: enemy3.x + enemy3.width,
-            enemy3_upper_y: enemy3.y,
-            enemy3_bottom_y: enemy3.y + enemy3.height,
+    function crashAtThirdCornerOf(player, enemy) {
+        return (
+            player.left_x > enemy.left_x &&
+            player.left_x < enemy.right_x &&
+            player.bottom_y > enemy.upper_y &&
+            player.bottom_y < enemy.bottom_y)
+    }
 
-            orangeGem_left_x: orangeGem.x,
-            orangeGem_right_x: orangeGem.x + orangeGem.width,
-            orangeGem_upper_y: orangeGem.y,
-            orangeGem_bottom_y: orangeGem.y + orangeGem.height,
-
-            greenGem_left_x: greenGem.x,
-            greenGem_right_x: greenGem.x + greenGem.width,
-            greenGem_upper_y: greenGem.y,
-            greenGem_bottom_y: greenGem.y + greenGem.height,
-
-            blueGem_left_x: blueGem.x,
-            blueGem_right_x: blueGem.x + blueGem.width,
-            blueGem_upper_y: blueGem.y,
-            blueGem_bottom_y: blueGem.y + blueGem.height,
-
-        };
-
-        return coordinates;
+    function crashAtFourthCornerOf(player, enemy) {
+        return (
+            player.right_x < enemy.right_x &&
+            player.right_x > enemy.left_x &&
+            player.bottom_y > enemy.upper_y &&
+            player.bottom_y < enemy.bottom_y)
     }
 
     function checkCollisions(coordinates) {
 
-        // collisions with enemies
-        if ((coordinates.player_left_x > coordinates.enemy1_left_x && coordinates.player_left_x < coordinates.enemy1_right_x && coordinates.player_upper_y > coordinates.enemy1_upper_y && coordinates.player_upper_y < coordinates.enemy1_upper_y)
-            || (coordinates.player_right_x < coordinates.enemy1_right_x && coordinates.player_right_x > coordinates.enemy1_left_x && coordinates.player_upper_y > coordinates.enemy1_upper_y && coordinates.player_upper_y < coordinates.enemy1_upper_y)
-            || (coordinates.player_left_x > coordinates.enemy1_left_x && coordinates.player_left_x < coordinates.enemy1_right_x && coordinates.player_bottom_y > coordinates.enemy1_upper_y && coordinates.player_bottom_y < coordinates.enemy1_bottom_y)
-            || (coordinates.player_right_x < coordinates.enemy1_right_x && coordinates.player_right_x > coordinates.enemy1_left_x && coordinates.player_bottom_y > coordinates.enemy1_upper_y && coordinates.player_bottom_y < coordinates.enemy1_bottom_y)) {
+        if (crashAtFirstCornerOf(coordinates.player, coordinates.enemy1) ||
+            crashAtSecondCornerOf(coordinates.player, coordinates.enemy1) ||
+            crashAtThirdCornerOf(coordinates.player, coordinates.enemy1) ||
+            crashAtFourthCornerOf(coordinates.player, coordinates.enemy1)) {
             player.y = 380;
             hearts--
         }
 
-        if ((coordinates.player_left_x > coordinates.enemy2_left_x && coordinates.player_left_x < coordinates.enemy2_right_x && coordinates.player_upper_y > coordinates.enemy2_upper_y && coordinates.player_upper_y < coordinates.enemy2_upper_y)
-            || (coordinates.player_right_x < coordinates.enemy2_right_x && coordinates.player_right_x > coordinates.enemy2_left_x && coordinates.player_upper_y > coordinates.enemy2_upper_y && coordinates.player_upper_y < coordinates.enemy2_upper_y)
-            || (coordinates.player_left_x > coordinates.enemy2_left_x && coordinates.player_left_x < coordinates.enemy2_right_x && coordinates.player_bottom_y > coordinates.enemy2_upper_y && coordinates.player_bottom_y < coordinates.enemy2_bottom_y)
-            || (coordinates.player_right_x < coordinates.enemy2_right_x && coordinates.player_right_x > coordinates.enemy2_left_x && coordinates.player_bottom_y > coordinates.enemy2_upper_y && coordinates.player_bottom_y < coordinates.enemy2_bottom_y)) {
+        if (crashAtFirstCornerOf(coordinates.player, coordinates.enemy2) ||
+            crashAtSecondCornerOf(coordinates.player, coordinates.enemy2) ||
+            crashAtThirdCornerOf(coordinates.player, coordinates.enemy2) ||
+            crashAtFourthCornerOf(coordinates.player, coordinates.enemy2)) {
             player.y = 380;
             hearts--
         }
 
-        if ((coordinates.player_left_x > coordinates.enemy3_left_x && coordinates.player_left_x < coordinates.enemy3_right_x && coordinates.player_upper_y > coordinates.enemy3_upper_y && coordinates.player_upper_y < coordinates.enemy3_upper_y)
-            || (coordinates.player_right_x < coordinates.enemy3_right_x && coordinates.player_right_x > coordinates.enemy3_left_x && coordinates.player_upper_y > coordinates.enemy3_upper_y && coordinates.player_upper_y < coordinates.enemy3_upper_y)
-            || (coordinates.player_left_x > coordinates.enemy3_left_x && coordinates.player_left_x < coordinates.enemy3_right_x && coordinates.player_bottom_y > coordinates.enemy3_upper_y && coordinates.player_bottom_y < coordinates.enemy3_bottom_y)
-            || (coordinates.player_right_x < coordinates.enemy3_right_x && coordinates.player_right_x > coordinates.enemy3_left_x && coordinates.player_bottom_y > coordinates.enemy3_upper_y && coordinates.player_bottom_y < coordinates.enemy3_bottom_y)) {
+        if (crashAtFirstCornerOf(coordinates.player, coordinates.enemy3) ||
+            crashAtSecondCornerOf(coordinates.player, coordinates.enemy3) ||
+            crashAtThirdCornerOf(coordinates.player, coordinates.enemy3) ||
+            crashAtFourthCornerOf(coordinates.player, coordinates.enemy3)) {
             player.y = 380;
             hearts--
         }
 
-        // collisions with gems
+        // check collisions with gems only when not collected
         if (!(isOrangeGemCollected)) {
-            if ((coordinates.player_left_x > coordinates.orangeGem_left_x && coordinates.player_left_x < coordinates.orangeGem_right_x && coordinates.player_upper_y > coordinates.orangeGem_upper_y && coordinates.player_upper_y < coordinates.orangeGem_upper_y)
-                || (coordinates.player_right_x < coordinates.orangeGem_right_x && coordinates.player_right_x > coordinates.orangeGem_left_x && coordinates.player_upper_y > coordinates.orangeGem_upper_y && coordinates.player_upper_y < coordinates.orangeGem_upper_y)
-                || (coordinates.player_left_x > coordinates.orangeGem_left_x && coordinates.player_left_x < coordinates.orangeGem_right_x && coordinates.player_bottom_y > coordinates.orangeGem_upper_y && coordinates.player_bottom_y < coordinates.orangeGem_bottom_y)
-                || (coordinates.player_right_x < coordinates.orangeGem_right_x && coordinates.player_right_x > coordinates.orangeGem_left_x && coordinates.player_bottom_y > coordinates.orangeGem_upper_y && coordinates.player_bottom_y < coordinates.orangeGem_bottom_y)) {
+            if (crashAtFirstCornerOf(coordinates.player, coordinates.orangeGem) ||
+                crashAtSecondCornerOf(coordinates.player, coordinates.orangeGem) ||
+                crashAtThirdCornerOf(coordinates.player, coordinates.orangeGem) ||
+                crashAtFourthCornerOf(coordinates.player, coordinates.orangeGem)) {
                 score = score + 150;
                 isOrangeGemCollected = true;
             }
-
         }
 
         if (!(isBlueGemCollected)) {
-            if ((coordinates.player_left_x > coordinates.blueGem_left_x && coordinates.player_left_x < coordinates.blueGem_right_x && coordinates.player_upper_y > coordinates.blueGem_upper_y && coordinates.player_upper_y < coordinates.blueGem_upper_y)
-                || (coordinates.player_right_x < coordinates.blueGem_right_x && coordinates.player_right_x > coordinates.blueGem_left_x && coordinates.player_upper_y > coordinates.blueGem_upper_y && coordinates.player_upper_y < coordinates.blueGem_upper_y)
-                || (coordinates.player_left_x > coordinates.blueGem_left_x && coordinates.player_left_x < coordinates.blueGem_right_x && coordinates.player_bottom_y > coordinates.blueGem_upper_y && coordinates.player_bottom_y < coordinates.blueGem_bottom_y)
-                || (coordinates.player_right_x < coordinates.blueGem_right_x && coordinates.player_right_x > coordinates.blueGem_left_x && coordinates.player_bottom_y > coordinates.blueGem_upper_y && coordinates.player_bottom_y < coordinates.blueGem_bottom_y)) {
+            if (crashAtFirstCornerOf(coordinates.player, coordinates.blueGem) ||
+                crashAtSecondCornerOf(coordinates.player, coordinates.blueGem) ||
+                crashAtThirdCornerOf(coordinates.player, coordinates.blueGem) ||
+                crashAtFourthCornerOf(coordinates.player, coordinates.blueGem)) {
                 score = score + 50;
                 isBlueGemCollected = true;
             }
-
         }
 
         if (!(isGreenGemCollected)) {
-            if ((coordinates.player_left_x > coordinates.greenGem_left_x && coordinates.player_left_x < coordinates.greenGem_right_x && coordinates.player_upper_y > coordinates.greenGem_upper_y && coordinates.player_upper_y < coordinates.greenGem_upper_y)
-                || (coordinates.player_right_x < coordinates.greenGem_right_x && coordinates.player_right_x > coordinates.greenGem_left_x && coordinates.player_upper_y > coordinates.greenGem_upper_y && coordinates.player_upper_y < coordinates.greenGem_upper_y)
-                || (coordinates.player_left_x > coordinates.greenGem_left_x && coordinates.player_left_x < coordinates.greenGem_right_x && coordinates.player_bottom_y > coordinates.greenGem_upper_y && coordinates.player_bottom_y < coordinates.greenGem_bottom_y)
-                || (coordinates.player_right_x < coordinates.greenGem_right_x && coordinates.player_right_x > coordinates.greenGem_left_x && coordinates.player_bottom_y > coordinates.greenGem_upper_y && coordinates.player_bottom_y < coordinates.greenGem_bottom_y)) {
+            if (crashAtFirstCornerOf(coordinates.player, coordinates.greenGem) ||
+                crashAtSecondCornerOf(coordinates.player, coordinates.greenGem) ||
+                crashAtThirdCornerOf(coordinates.player, coordinates.greenGem) ||
+                crashAtFourthCornerOf(coordinates.player, coordinates.greenGem)) {
                 score = score + 10;
                 isGreenGemCollected = true;
             }
-
         }
-
     }
 
 
