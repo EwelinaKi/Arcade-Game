@@ -2,6 +2,9 @@
 
 This is a simple arcade game made for Udacity Google Nanodegree Scholarship Program.
 
+![screenshot](images/screenshot.jpg)
+
+
 ##Project Goals
 
 The goal of this project was:
