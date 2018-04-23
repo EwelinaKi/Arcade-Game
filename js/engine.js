@@ -12,6 +12,7 @@
  * This engine makes the canvas' context (ctx) object globally available to make 
  * writing app.js a little simpler to work with.
  */
+"use strict";
 
 let Engine = (function (global) {
     /* Predefine the variables we'll be using within this scope,
@@ -130,19 +131,18 @@ let Engine = (function (global) {
         updateEntities(dt);
         checkCollisions(calculateCornersCoordinates());
         if (hearts === -1) {
-            game_over(score, level)
+            game_over(score, level);
         }
         if (player.y < 70) {
             score++;
             level++;
             if (level === lastLevel) {
-                game_over(score, level - 1)
+                game_over(score, level - 1);
             }
             levelChangeDetection = true;
             player.x = 210;
-            player.y = 380;
+            player.y = 390;
         }
-
     }
 
     function calculateCornersCoordinates() {
@@ -189,95 +189,43 @@ let Engine = (function (global) {
                 upper_y: blueGem.y,
                 bottom_y: blueGem.y + blueGem.height,
             }
-        }
+        };
     }
 
-    function crashAtFirstCornerOf(player, enemy) {
+
+    function checkCrash(player, enemy) {
         return (
-            player.left_x > enemy.left_x &&
             player.left_x < enemy.right_x &&
-            player.upper_y > enemy.upper_y &&
-            player.upper_y < enemy.upper_y
-        )
-    }
-
-    function crashAtSecondCornerOf(player, enemy) {
-        return (
-            player.right_x < enemy.right_x &&
             player.right_x > enemy.left_x &&
-            player.upper_y > enemy.upper_y &&
-            player.upper_y < enemy.upper_y
-        )
-    }
-
-    function crashAtThirdCornerOf(player, enemy) {
-        return (
-            player.left_x > enemy.left_x &&
-            player.left_x < enemy.right_x &&
-            player.bottom_y > enemy.upper_y &&
-            player.bottom_y < enemy.bottom_y)
-    }
-
-    function crashAtFourthCornerOf(player, enemy) {
-        return (
-            player.right_x < enemy.right_x &&
-            player.right_x > enemy.left_x &&
-            player.bottom_y > enemy.upper_y &&
-            player.bottom_y < enemy.bottom_y)
+            player.upper_y < enemy.bottom_y &&
+            player.bottom_y > enemy.upper_y);
     }
 
     function checkCollisions(coordinates) {
 
-        if (crashAtFirstCornerOf(coordinates.player, coordinates.enemy1) ||
-            crashAtSecondCornerOf(coordinates.player, coordinates.enemy1) ||
-            crashAtThirdCornerOf(coordinates.player, coordinates.enemy1) ||
-            crashAtFourthCornerOf(coordinates.player, coordinates.enemy1)) {
-            player.y = 380;
-            hearts--
+        if (checkCrash(coordinates.player, coordinates.enemy1) ||
+            checkCrash(coordinates.player, coordinates.enemy2) ||
+            checkCrash(coordinates.player, coordinates.enemy3)) {
+            player.y = 390;
+            hearts--;
         }
 
-        if (crashAtFirstCornerOf(coordinates.player, coordinates.enemy2) ||
-            crashAtSecondCornerOf(coordinates.player, coordinates.enemy2) ||
-            crashAtThirdCornerOf(coordinates.player, coordinates.enemy2) ||
-            crashAtFourthCornerOf(coordinates.player, coordinates.enemy2)) {
-            player.y = 380;
-            hearts--
-        }
-
-        if (crashAtFirstCornerOf(coordinates.player, coordinates.enemy3) ||
-            crashAtSecondCornerOf(coordinates.player, coordinates.enemy3) ||
-            crashAtThirdCornerOf(coordinates.player, coordinates.enemy3) ||
-            crashAtFourthCornerOf(coordinates.player, coordinates.enemy3)) {
-            player.y = 380;
-            hearts--
-        }
-
-        // check collisions with gems only when not collected
         if (!(isOrangeGemCollected)) {
-            if (crashAtFirstCornerOf(coordinates.player, coordinates.orangeGem) ||
-                crashAtSecondCornerOf(coordinates.player, coordinates.orangeGem) ||
-                crashAtThirdCornerOf(coordinates.player, coordinates.orangeGem) ||
-                crashAtFourthCornerOf(coordinates.player, coordinates.orangeGem)) {
+            if (checkCrash(coordinates.player, coordinates.orangeGem)) {
                 score = score + 150;
                 isOrangeGemCollected = true;
             }
         }
 
         if (!(isBlueGemCollected)) {
-            if (crashAtFirstCornerOf(coordinates.player, coordinates.blueGem) ||
-                crashAtSecondCornerOf(coordinates.player, coordinates.blueGem) ||
-                crashAtThirdCornerOf(coordinates.player, coordinates.blueGem) ||
-                crashAtFourthCornerOf(coordinates.player, coordinates.blueGem)) {
+            if (checkCrash(coordinates.player, coordinates.blueGem)) {
                 score = score + 50;
                 isBlueGemCollected = true;
             }
         }
 
         if (!(isGreenGemCollected)) {
-            if (crashAtFirstCornerOf(coordinates.player, coordinates.greenGem) ||
-                crashAtSecondCornerOf(coordinates.player, coordinates.greenGem) ||
-                crashAtThirdCornerOf(coordinates.player, coordinates.greenGem) ||
-                crashAtFourthCornerOf(coordinates.player, coordinates.greenGem)) {
+            if (checkCrash(coordinates.player, coordinates.greenGem)) {
                 score = score + 10;
                 isGreenGemCollected = true;
             }
@@ -310,7 +258,7 @@ let Engine = (function (global) {
          * for that particular row of the game level.
          */
 
-        var rowImages = [
+        let rowImages = [
                 'images/water-block.png', // Top row is water
                 'images/stone-block.png', // Row 1 of 3 of stone
                 'images/stone-block.png', // Row 2 of 3 of stone
@@ -323,13 +271,13 @@ let Engine = (function (global) {
             row, col;
 
         // Before drawing, clear existing canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillText("Level: ", 10, 35);
         ctx.fillText(level, 80, 35);
         ctx.fillText("Score: ", 200, 35);
         ctx.fillText(score, 270, 35);
 
-        for (i = 0; i <= hearts; i++) {
+        for (let i = 0; i <= hearts; i++) {
             ctx.drawImage(Resources.get('images/Heart.png'), 330 + 30 * i, 17, 25, 25);
 
         }

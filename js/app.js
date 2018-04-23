@@ -1,6 +1,8 @@
+"use strict";
+
 Array.prototype.sample = function () {
     return this[Math.floor(Math.random() * this.length)];
-}
+};
 
 class Enemy {
 
@@ -40,7 +42,7 @@ class Player {
     constructor(width, height) {
         this.sprite = 'images/char-horn-girl.png';
         this.x = 210;
-        this.y = 380;
+        this.y = 390;
         this.width = width;
         this.height = height;
     }
@@ -79,7 +81,6 @@ class Gem {
         this.y = possiblePositions.sample()[1];
         this.width = 101;
         this.height = 112;
-
     }
 
     render() {
@@ -101,13 +102,11 @@ function changeCostume(costume, width, height) {
 function game_over(points = "", level = "") {
     modal.style.display = "block";
     const summaryText = `<p>Level: ${level}</p>
-    <p>Score: ${score}</p>`
-    document.getElementById("text").innerHTML = (summaryText)
+    <p>Score: ${score}</p>`;
+    document.getElementById("text").innerHTML = (summaryText);
 }
 
 // Now instantiate your objects.
-
-
 const gemOrangePositions = [[23, 55], [123, 55], [223, 55], [323, 55], [423, 55]];
 const gemGreenPositions = [[23, 140], [123, 140], [223, 140], [323, 140], [423, 140], [23, 225], [123, 225], [223, 225], [323, 225], [423, 225], [23, 310], [123, 310], [223, 310], [323, 310], [423, 310]];
 const gemBluePositions = [[23, 480], [123, 480], [323, 480], [423, 480]];
@@ -155,7 +154,7 @@ costume5.onclick = function () {
     changeCostume("images/char-pink-girl.png", 75, 99);
 };
 
-document.addEventListener('keyup', function (e) {
+document.addEventListener('keydown', function (e) {
     const allowedKeys = {
         37: 'left',
         38: 'up',
@@ -167,16 +166,12 @@ document.addEventListener('keyup', function (e) {
 });
 
 restartButton.onclick = function () {
-    location = location
-}
-
-closeModal.onclick = function () {
-    modal.style.display = "none";
-}
+    location = location;
+};
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function (event) {
-    if (event.target == modal) {
+    if (event.target === modal) {
         modal.style.display = "none";
     }
-}
+};
