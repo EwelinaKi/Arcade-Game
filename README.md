@@ -18,7 +18,7 @@ Move the sprite with arrow keys to get to the river. For collecting randomly gen
 
 ## How to run the game
 
-[Click this link  to play the game](https://ewelinaki.github.io/Udacity-Arcade-Game/) or clone repository and run index.html file in your browser.
+[Click this link  to play the game](https://ewelinaki.github.io/UDACITY-Arcade-Game/) or clone repository and run index.html file in your browser.
 
 
 
